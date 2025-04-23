@@ -6,14 +6,16 @@
 #include <chrono>
 
 
-#define SWAP_VARS(PARAM_1, PARAM_2) \
-    __asm { mov eax, PARAM_1 } \
-    __asm { mov ebx, PARAM_2 } \
-    __asm { xchg eax, ebx } \
-    __asm { mov PARAM_1, eax } \
-    __asm { mov PARAM_2, ebx }
+#define SWAP_ASM1(PARAM_1, PARAM_2) \
+    __asm { \
+        mov eax, PARAM_1  \
+        mov ebx, PARAM_2  \
+        xchg eax, ebx  \
+        mov PARAM_1, eax  \
+        mov PARAM_2, ebx  \
+    }
 
-#define SWAP(aaa, bbb)                                \
+#define SWAP_ASM2(aaa, bbb)                                \
     __asm {                                           \
         lea  eax, aaa           /* EAX = &a */       \
         lea  ecx, bbb           /* ECX = &b */       \
@@ -23,48 +25,12 @@
         mov  DWORD PTR [ecx], edx  /* b = a */       \
     }
 
-//#define SWAP_VARS(PARAM_1, PARAM_2) \
-//    __asm { lea esi, PARAM_1 }         /* アドレスを esi に */ \
-//    __asm { lea edi, PARAM_2 }         /* アドレスを edi に */ \
-//    __asm { mov eax, [esi] }     \
-//    __asm { mov ebx, [edi] }     \
-//    __asm { xchg eax, ebx }      \
-//    __asm { mov [esi], eax }     \
-//    __asm { mov [edi], ebx }
-
-
-// 32ビット x86, MSVC 用
-inline void SwapAsm(int& a, int& b)
-{
-    __asm {
-        // 引数 a（実体は int*）を EAX にロード
-        mov  eax, a
-        // 引数 b（実体は int*）を ECX にロード
-        mov  ecx, b
-        // [EAX]（= a の値）を EDX にロード
-        mov  edx, [eax]
-        // EDX（= a の値）と [ECX]（= b の値）を交換
-        xchg edx, [ecx]
-        // EAX が指す場所に、交換後の EDX（= 元の b の値）を書き戻し
-        mov[eax], edx
+#define SWAP_DATA(aaa, bbb) \
+    { \
+	    int ccc = aaa;  \
+	    aaa = bbb;      \
+	    bbb = ccc;      \
     }
-}
-
-inline void SwapAsm2(int& PARAM_1, int& PARAM_2)
-{
-    __asm { mov eax, PARAM_1 }
-    __asm { mov ebx, PARAM_2 }
-    __asm { xchg eax, ebx }
-    __asm { mov PARAM_1, eax }
-    __asm { mov PARAM_2, ebx }
-}
-
-inline void SwapData(int& a, int& b)
-{
-	int c = a;
-	b = a;
-	a = c;
-}
 
 ///////////////////////////////////////////////////////////////////////////
 // clflush命令を使用してキャッシュラインを無効する関数
@@ -104,10 +70,11 @@ int main()
         }
         auto t1 = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < N; ++i) {
-            //int buf = e[i];
-            //e[i] = f[i];
-            //f[i] = buf;
-			SwapData(e[i], f[i]);
+            int a = e[i];
+            int b = f[i];
+            SWAP_DATA(a, b);
+            e[i]=a;
+            f[i]=b;
         }
         auto t2 = std::chrono::high_resolution_clock::now();
         sum_enabled_alg += std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
@@ -121,13 +88,23 @@ int main()
             f[i] = N - i;
         }
         auto t1 = std::chrono::high_resolution_clock::now();
+
+		int a, b;
+        int* pa = &a;
+        int* pb = &b;
+
         for (int i = 0; i < N; ++i) {
-			int a = e[i];
-			int b = f[i];
-            SWAP_VARS(a, b);
-            //SWAP_VARS(e[i], f[i]);
-            //SWAP(e[i], f[i]);
-            //SwapAsm2(e[i], f[i]);
+			a = e[i];
+			b = f[i];
+            __asm {
+                mov eax, pa
+                mov ebx, pb
+                xchg eax, ebx
+                mov pa, eax
+                mov pb, ebx
+            }
+            e[i] = a;
+            f[i] = b;
         }
         auto t2 = std::chrono::high_resolution_clock::now();
         sum_enabled_asm += std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
@@ -145,10 +122,12 @@ int main()
         }
         auto t1 = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < N; ++i) {
-            //int buf = e[i];
-            //e[i] = f[i];
-            //f[i] = buf;
-			SwapData(e[i], f[i]);
+            int a = e[i];
+            int b = f[i];
+          SWAP_DATA(a, b);
+          e[i] = a;
+          f[i] = b;
+
         }
         auto t2 = std::chrono::high_resolution_clock::now();
         sum_disabled_alg += std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
@@ -163,12 +142,22 @@ int main()
             f[i] = N - i;
         }
         auto t1 = std::chrono::high_resolution_clock::now();
+
+        int a, b;
+        int* pa = &a;
+        int* pb = &b;
         for (int i = 0; i < N; ++i) {
-            int a = e[i];
-            int b = f[i];
-            SWAP_VARS(a, b); //直接突っ込むとマクロで文法エラー
-            //SWAP_VARS(e[i], f[i]);
-            //SwapAsm2(e[i], f[i]);
+            a = e[i];
+            b = f[i];
+            __asm {
+                mov eax, pa
+                mov ebx, pb
+                xchg eax, ebx
+                mov pa, eax
+                mov pb, ebx
+            }
+            e[i] = a;
+            f[i] = b;
         }
         auto t2 = std::chrono::high_resolution_clock::now();
         sum_disabled_asm += std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
