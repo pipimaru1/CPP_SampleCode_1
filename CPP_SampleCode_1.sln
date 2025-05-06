@@ -8,6 +8,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPP_Assembler_1", "CPP_Asse
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPP_HelloWorld", "CPP_HelloWorld\CPP_HelloWorld.vcxproj", "{BC9F9450-7958-482B-AEB9-3263F7AF6447}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CPP_SamplePointer_1", "CPP_SamplePointer_1\CPP_SamplePointer_1.vcxproj", "{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -40,6 +42,14 @@ Global
 		{BC9F9450-7958-482B-AEB9-3263F7AF6447}.Release|x64.Build.0 = Release|x64
 		{BC9F9450-7958-482B-AEB9-3263F7AF6447}.Release|x86.ActiveCfg = Release|Win32
 		{BC9F9450-7958-482B-AEB9-3263F7AF6447}.Release|x86.Build.0 = Release|Win32
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Debug|x64.ActiveCfg = Debug|x64
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Debug|x64.Build.0 = Debug|x64
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Debug|x86.ActiveCfg = Debug|Win32
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Debug|x86.Build.0 = Debug|Win32
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Release|x64.ActiveCfg = Release|x64
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Release|x64.Build.0 = Release|x64
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Release|x86.ActiveCfg = Release|Win32
+		{C60A3D60-75F2-4173-B6D3-6C2860B58E0F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
