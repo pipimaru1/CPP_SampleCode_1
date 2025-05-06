@@ -1,8 +1,10 @@
 ﻿// CPP_HelloWorld.cpp : このファイルには 'main' 関数が含まれています。プログラム実行の開始と終了がそこで行われます。
 //
+// C++のHello Worldプログラム
 
-#include <iostream>
-#include <conio.h>
+// ヘッダファイルのインクルード
+#include <conio.h> //関数の定義が記述されている conioはCの標準ライブラリ
+#include <iostream> //iostreamはC++の標準ライブラリ
 
 int main()
 {
@@ -27,6 +29,7 @@ int main()
 	printf("Hello World! on C\n"); // C言語のprintf関数を使用
 
 	_getch(); // ユーザーがキーを押すまで待機
+	//↑なぜこの行が必要なのか考えてみてください。
 }
 
 // プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー
